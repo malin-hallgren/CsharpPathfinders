@@ -25,6 +25,7 @@ namespace PathfinderTest.Algorithm
 
         public void Algorithm(bool[,] grid, Node src, Node goal, string[] lines)
         {
+            Driver.stopWatch.Start();
             int ROW = grid.GetLength(0);
             int COL = grid.GetLength(1);
 
