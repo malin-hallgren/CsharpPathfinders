@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace PathfinderTest
+namespace PathfinderTest.Utils
 {
     internal struct Node
     {
@@ -18,6 +18,22 @@ namespace PathfinderTest
             Col = y;
         }
 
+        static public (int, int) SelectRandom(Random rand, bool[,] passable)
+        {
+            int rows = passable.GetLength(0);
+            int cols = passable.GetLength(1);
+
+            while (true)
+            {
+                (int, int) selected = (rand.Next(1, rows - 1), rand.Next(1, cols - 1));
+                if (!passable[selected.Item1, selected.Item2])
+                {
+                    continue;
+                }
+                return (selected.Item1, selected.Item2);
+            }
+
+        }
 
         //public override bool Equals(object? obj)
         //{
