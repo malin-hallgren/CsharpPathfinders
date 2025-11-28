@@ -1,7 +1,9 @@
 ﻿using PathfinderTest.Algorithm;
 using System;
 using System.Collections.Generic;
-using System.Linq;
+using System.Diagnostics;
+
+//using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -9,6 +11,7 @@ namespace PathfinderTest.Utils
 {
     internal class Driver
     {
+        public static Stopwatch stopWatch = new Stopwatch();
 
         static public void Run()
         {

@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -11,58 +10,53 @@ namespace PathfinderTest.Utils
 
         static public void Trace(Cell[,] cells, Node goal, Node start, string[] lines)
         {
-            //stack <int,int>?
-            var Path = new Stack<Node>();
+            Driver.stopWatch.Stop(); //stop watch here as the algorithm is now done and all this is visualization
+
+            //var Path = new Stack<(int, int)>();
 
             int row = goal.Row;
             int col = goal.Col;
+            int idx = 0;
 
             while (!(cells[row, col].parent_i == row && cells[row, col].parent_j == col))
             {
-                Path.Push(new Node(row, col));
-                int temp_x = cells[row, col].parent_i;
-                int temp_y = cells[row, col].parent_j;
-                row = temp_x;
-                col = temp_y;
+                idx++;
+                int temp_r = cells[row, col].parent_i;
+                int temp_c = cells[row, col].parent_j;
+
+                row = temp_r;
+                col = temp_c;
             }
 
-            int stepAmount = 0;
-            Path.Push(new Node(row, col));
+            idx++; //starting spot needs to be counted
 
-            (int, int)[] pathTaken = new (int, int)[Path.Count];
-            while (Path.Count > 0)
+            var path = new (int, int)[idx];
+            row = goal.Row;
+            col = goal.Col;
+
+            int i = idx - 1; //we start adding at last index of the array
+
+            while (!(cells[row, col].parent_i == row && cells[row, col].parent_j == col))
             {
-                var step = Path.Pop();
-                pathTaken[stepAmount] = (step.Row, step.Col);
-                stepAmount++;
-                //Console.Write($" -> {step.Row}, {step.Col}");
+                path[i--] = (row, col); //adds coords set up in last itteration/outside loop
+
+                int temp_r = cells[row, col].parent_i;
+                int temp_c = cells[row, col].parent_j;
+
+                row = temp_r;
+                col = temp_c;
             }
 
-            WritePath(pathTaken, goal, start, lines);
+            path[0] = (row, col); //adds start point
+
+
+            WritePath(path, goal, start, lines);
         }
 
         static private void WritePath((int, int)[] path, Node goal, Node start, string[] lines)
         {
-            //(int, int) defaultCursor = Console.GetCursorPosition();
-
-            //foreach (var step in path) //bake this into display of the map
-            //{
-            //    Console.SetCursorPosition(step.Item2, step.Item1);
-
-            //    if ((step.Item1 == goal.Row && step.Item2 == goal.Col) || (step.Item1 == start.Row && step.Item2 == start.Col))
-            //    {
-            //        Console.Write("X");
-            //    }
-            //    else
-            //    {
-            //        Console.Write("o");
-            //    }
-            //}
-
-            //Console.SetCursorPosition(defaultCursor.Item1, defaultCursor.Item2);
-
             var sb = new StringBuilder(64);
-            sb.Append("Goal reached in ").Append(path.Length).Append($" steps\nGoal point was at {goal.Row}, {goal.Col}\nPath taken ");
+            sb.Append("Goal reached in ").Append(path.Length - 1).Append($" steps\nTime elapsed: ").Append(Driver.stopWatch.Elapsed.Microseconds).Append($" Microseconds\nGoal point was at {goal.Row}, {goal.Col}\nPath taken ");
 
             for (int i = 0; i < path.Length; i++)
             {
@@ -75,30 +69,32 @@ namespace PathfinderTest.Utils
                 }
             }
 
-            var rows = lines.Select(l => l.ToCharArray()).ToArray();
-            foreach (var (r, c) in path)
-            {
-                var row = rows[r];
-                if (r == start.Row && c == start.Col)
-                {
-                    row[c] = 'S';
-                }
-                else if (r == goal.Row && c == goal.Col)
-                {
-                    row[c] = 'G';
-                }
-                else
-                {
-                    row[c] = 'o';
-                }
-            }
+            sb.Append("\n\n");
 
-            //another stringbuilder?
-            foreach (var row in rows)
+            for(int r = 0; r < lines.GetLength(0); r++)
             {
-                Console.WriteLine(new string(row));
+                string line = lines[r];
+                for (int c = 0; c < line.Length; c++)
+                {
+                    if (r == start.Row && c == start.Col)
+                    {
+                        sb.Append('S');
+                    }
+                    else if (r == goal.Row && c == goal.Col)
+                    {
+                        sb.Append('G');
+                    }
+                    else if (path.Contains((r, c))) //Find better solution for this, bool array for checking?
+                    {
+                        sb.Append('o');
+                    }
+                    else
+                    {
+                        sb.Append(line[c]);
+                    }
+                }
+                sb.Append("\n");
             }
-
             Console.WriteLine(sb.ToString());
         }
     }

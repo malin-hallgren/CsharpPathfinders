@@ -10,7 +10,7 @@ namespace PathfinderTest.Utils
     {
         public string selected;
         static private readonly string[] maps = {"../../../Maps/Map1.txt", "../../../Maps/Map2.txt"}; 
-        public string[] mazes =
+        static public string[] mazes =
         {
 @"-----------------
 |     |         |
@@ -89,51 +89,12 @@ namespace PathfinderTest.Utils
 
         static public string[] GetLines(Random rand)
         {
-            string path = maps[rand.Next(0, maps.Length)];
-
-            try
+            string[] lines = mazes[rand.Next(0, mazes.Length - 1)].Split('\n');
+            for (int i = 0; i < lines.Length; i++)
             {
-                //not performant, consider replacing for the array
-                string[] lines = File.ReadAllLines(path);
-
-                if (lines.Length == 0)
-                {
-                    throw new Exception("Maze must have a length greater than 0");
-                }
-                if (!lines.All(x => x.Length == lines[0].Length))
-                {
-                    throw new Exception("Maze must be uniform");
-                }
-                    
-                return lines;
+                lines[i] = lines[i].TrimEnd('\r');
             }
-            catch (Exception ex) 
-            {
-                Console.WriteLine($"{ex.Message}\nGenerating standard maze...");
-
-                string[] lines = new string[]
-                {
-                    "-----------------",
-                    "|     |         |",
-                    "| -- ---- |     |",
-                    "|      |     |  |",
-                    "| ---- | ----   |",
-                    "| |    |        |",
-                    "| | ---- ----   |",
-                    "| |         |   |",
-                    "| ---- | ----   |",
-                    "|    | |        |",
-                    "| -- | ---- --- |",
-                    "|    |          |",
-                    "| ---- ---- ----|",
-                    "|               |",
-                    "| ----      ----|",
-                    "|               |",
-                    "|               |",
-                    "-----------------"
-                };
-                return lines;
-            }
+            return lines;
         }
 
         static public bool[,] GetGrid(string[] lines)
