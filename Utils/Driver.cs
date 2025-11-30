@@ -41,17 +41,6 @@ namespace PathfinderTest.Utils
             var astar = new Astar();
 
             astar.Algorithm(grid, start, goal, lines);
-
-            //foreach (var line in lines)
-            //{
-            //    Console.WriteLine(line);
-            //}
-
-            //foreach (var coordinate in grid)
-            //{
-            //    Console.WriteLine(coordinate);
-            //}
-
         }
     }
 }
