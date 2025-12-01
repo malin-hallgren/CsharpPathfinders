@@ -1,7 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Text;
+using System.Globalization;
+
 
 namespace PathfinderTest.Utils
 {
@@ -16,7 +15,6 @@ namespace PathfinderTest.Utils
         /// <param name="lines">the maze as strings by row</param>
         static public void Trace(Cell[,] cells, Node goal, Node start, string[] lines)
         {
-            Driver.stopWatch.Stop(); //stop watch here as the algorithm is now done and all this is visualization
 
             int row = goal.Row;
             int col = goal.Col;
@@ -77,14 +75,29 @@ namespace PathfinderTest.Utils
         /// <param name="lines">the maze as strings by row</param>
         static private void WritePath((int, int)[] path, bool[,] onPath, Node goal, Node start, string[] lines)
         {
-            var sb = new StringBuilder(64);
-            sb.Append("Goal reached in ").Append(path.Length - 1).Append($" steps\nTime elapsed: ").Append(Driver.stopWatch.Elapsed.Microseconds).Append($" Microseconds\nGoal point was at {goal.Row}, {goal.Col}\nPath taken ");
+            // Estimate needed capacity to avoid StringBuilder growth
+            int headerEst = 128;
+            int perStepEst = 12; // approximate chars per path step like "(r,c)->"
+            int pathEst = path.Length * perStepEst;
+            int mapChars = 0;
+            for (int rr = 0; rr < lines.Length; rr++)
+            {
+                mapChars += (lines[rr]?.Length ?? 0) + 1; // include newline
+            }
+            int estimatedCapacity = headerEst + pathEst + mapChars;
+
+            var sb = new StringBuilder(estimatedCapacity);
+
+            // Build header without interpolated allocations
+            sb.Append("Goal reached in ").Append((path.Length - 1).ToString(CultureInfo.InvariantCulture)).Append(" steps\nTime elapsed: ");
+            sb.Append(Driver.stopWatch.Elapsed.Microseconds.ToString(CultureInfo.InvariantCulture)).Append(" Microseconds\nGoal point was at ");
+            sb.Append(goal.Row.ToString(CultureInfo.InvariantCulture)).Append(", ").Append(goal.Col.ToString(CultureInfo.InvariantCulture)).Append("\nPath taken ");
 
             for (int i = 0; i < path.Length; i++)
             {
                 var step = path[i];
 
-                sb.Append('(').Append(step.Item1).Append(',').Append(step.Item2).Append(')');
+                sb.Append('(').Append(step.Item1.ToString(CultureInfo.InvariantCulture)).Append(',').Append(step.Item2.ToString(CultureInfo.InvariantCulture)).Append(')');
                 if (i + 1 < path.Length)
                 {
                     sb.Append("->");
@@ -93,7 +106,7 @@ namespace PathfinderTest.Utils
 
             sb.Append("\n\n");
 
-            for(int r = 0; r < lines.GetLength(0); r++)
+            for (int r = 0; r < lines.GetLength(0); r++)
             {
                 string line = lines[r];
                 for (int c = 0; c < line.Length; c++)
@@ -106,7 +119,7 @@ namespace PathfinderTest.Utils
                     {
                         sb.Append('G');
                     }
-                    else if (onPath[r, c] == true)
+                    else if (onPath[r, c])
                     {
                         sb.Append('o');
                     }
@@ -115,7 +128,7 @@ namespace PathfinderTest.Utils
                         sb.Append(line[c]);
                     }
                 }
-                sb.Append("\n");
+                sb.Append('\n');
             }
             Console.WriteLine(sb.ToString());
         }

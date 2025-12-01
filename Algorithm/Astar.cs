@@ -1,9 +1,5 @@
 ﻿using PathfinderTest.Utils;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+
 
 namespace PathfinderTest.Algorithm
 {
@@ -18,7 +14,7 @@ namespace PathfinderTest.Algorithm
         };
 
 
-        bool shouldVisualize = true;
+        bool shouldVisualize = false;
 
         public Astar(double baseCost = 1, double diagCost = 1.414)
         {
@@ -35,7 +31,7 @@ namespace PathfinderTest.Algorithm
         /// <param name="lines">all lines of the maze in a string array</param>
         public void Algorithm(bool[,] grid, Node src, Node goal, string[] lines)
         {
-            Driver.stopWatch.Start();
+            
             int ROW = grid.GetLength(0);
             int COL = grid.GetLength(1);
 

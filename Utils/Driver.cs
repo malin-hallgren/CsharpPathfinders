@@ -1,11 +1,5 @@
 ﻿using PathfinderTest.Algorithm;
-using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-
-//using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace PathfinderTest.Utils
 {
@@ -21,7 +15,8 @@ namespace PathfinderTest.Utils
 
 
             (int, int) startCoord = Node.SelectRandom(random, grid);
-            Node start = new Node(startCoord.Item1, startCoord.Item2);
+            Node start = new Node(1, 1);
+            //(startCoord.Item1, startCoord.Item2);
 
             (int, int) goalCoord = (-1, -1);
 
@@ -36,11 +31,29 @@ namespace PathfinderTest.Utils
                 }
             } while (!startGoalDistinct);
 
-            Node goal = new Node(goalCoord.Item1, goalCoord.Item2);
+            Node goal = new Node(9, 12);
+                
+            //(goalCoord.Item1, goalCoord.Item2);
 
             var astar = new Astar();
 
+            // Measure only the A* algorithm wall-clock time
+            var algSw = Stopwatch.StartNew();
             astar.Algorithm(grid, start, goal, lines);
+            algSw.Stop();
+
+            Console.WriteLine(FormattableString.Invariant($"A* algorithm elapsed: {algSw.Elapsed.TotalMilliseconds} ms ({algSw.Elapsed.Ticks} ticks)"));
+
+            //foreach (var line in lines)
+            //{
+            //    Console.WriteLine(line);
+            //}
+
+            //foreach (var coordinate in grid)
+            //{
+            //    Console.WriteLine(coordinate);
+            //}
+
         }
     }
 }
